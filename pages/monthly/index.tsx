@@ -83,12 +83,7 @@ const Monthly: NextPage<{
 
   useEffect(() => {
     getMonth();
-    console.log("xxx", router.query);
-  }, []);
-
-  const onClickItem = (url: string) => {
-    router.push(url);
-  };
+  }, [getMonth]);
 
   return (
     <div className="flex flex-col gap-4">

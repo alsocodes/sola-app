@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import { useRouter } from "next/router";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -50,7 +50,7 @@ const Monthly: NextPage<{
   const [progress, setProgress] = useState(false);
   const [data, setData] = useState<DataType | null>();
 
-  const getMonth = () => {
+  const getMonth = useCallback(() => {
     setProgress(true);
     fetchApi({ url: "/month" })
       .then((result) => {
@@ -58,7 +58,7 @@ const Monthly: NextPage<{
         setProgress(false);
       })
       .catch(() => setProgress(false));
-  };
+  }, []);
 
   const [submitting, setSubmitting] = useState(false);
   const createMonth = ({ month }: AddMonthFormType) => {
@@ -148,7 +148,7 @@ const AddMonthForm: FC<AddMonthFormInterface> = ({
 
   useEffect(() => {
     reset();
-  }, [resetForm]);
+  }, [resetForm, reset]);
 
   return (
     <form className="h-full flex items-cente" onSubmit={handleSubmit(onSubmit)}>

@@ -1,7 +1,7 @@
 import MyProgress from "@/components/MyProgress";
 import { faArrowLeftLong, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import BackComponent from "@/components/BackComponent";
 import { usePathname } from "next/navigation";
@@ -45,8 +45,7 @@ const PerMonth: NextPage<{
   const { month } = router.query;
   const [budgeting, setBudgeting] = useState<Budgeting | null>(null);
 
-  const getBudget = () => {
-    if (!month) return;
+  const getBudget = useCallback((month: string) => {
     setProgress(true);
     fetchApi({ url: `/budgeting/${month}` })
       .then((result) => {
@@ -54,11 +53,14 @@ const PerMonth: NextPage<{
         setProgress(false);
       })
       .catch(() => setProgress(false));
-  };
+  }, []);
 
   useEffect(() => {
-    if (month) getBudget();
-  }, [month]);
+    // getBudget();
+    if (month) {
+      getBudget(month.toString());
+    }
+  }, [month, getBudget]);
 
   const [dialog, setDialog] = useState<DialogType | null>(null);
   const onSubmit = (data: FormType) => {
@@ -69,7 +71,7 @@ const PerMonth: NextPage<{
       body: { ...data },
     })
       .then(() => {
-        getBudget();
+        getBudget(month?.toString() || "");
         setProgress(false);
         setDialog(null);
         notify("success", "Success");
@@ -204,7 +206,7 @@ const Form: FC<FormInterface> = ({ onSubmit, type, progress }) => {
 
   useEffect(() => {
     setValue("type", type);
-  }, [setValue]);
+  }, [setValue, type]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
